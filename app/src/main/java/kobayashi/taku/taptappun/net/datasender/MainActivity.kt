@@ -1,6 +1,7 @@
 package kobayashi.taku.taptappun.net.datasender
 
 import android.app.Activity
+import android.bluetooth.BluetoothAdapter
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
@@ -12,7 +13,13 @@ class MainActivity : Activity() {
         setContentView(R.layout.activity_main)
 
         // Example of a call to a native method
-        sample_text.text = stringFromJNI()
+        sample_text.text = stringFromJNI();
+
+        val adapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        // Bluetooth非搭載の場合はアプリを終了させる
+        if (adapter == null) {
+            finish();
+        }
     }
 
     /**
