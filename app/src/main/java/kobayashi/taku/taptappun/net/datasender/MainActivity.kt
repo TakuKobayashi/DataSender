@@ -2,7 +2,6 @@ package kobayashi.taku.taptappun.net.datasender
 
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
 import android.content.Intent
@@ -11,17 +10,19 @@ import android.bluetooth.BluetoothDevice
 import android.content.IntentFilter
 import android.view.View
 import android.widget.Button
-
+import android.widget.ListView
+import android.widget.ProgressBar
 
 class MainActivity : Activity() {
     private val mReceiver: BluetoothReceiver = BluetoothReceiver();
     private var mBluetoothAdapter: BluetoothAdapter? = null;
+    private lateinit var mScanProgressBar: ProgressBar;
+    private lateinit var mDeviceListAdapter: BluetoothScanDeviceAdapter;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Example of a call to a native method
         sample_text.text = stringFromJNI();
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -42,8 +43,13 @@ class MainActivity : Activity() {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
         registerReceiver(mReceiver, filter)
 
-        val button = findViewById<Button>(R.id.bluetooth_scan_button);
-        button.setOnClickListener({
+        mDeviceListAdapter = BluetoothScanDeviceAdapter(this);
+
+        mScanProgressBar = findViewById(R.id.device_list_progressbar);
+        mScanProgressBar.visibility = View.INVISIBLE;
+
+        val scanButton = findViewById<Button>(R.id.bluetooth_scan_button);
+        scanButton.setOnClickListener({
             Log.d("datasender", "click");
             if (mBluetoothAdapter!!.isDiscovering()) {
                 //検索中の場合は検出をキャンセルする
@@ -65,6 +71,27 @@ class MainActivity : Activity() {
         } else {
             scanableButton.visibility = View.INVISIBLE
         }
+        mReceiver.setOnReceiveCallback(object : BluetoothReceiver.ReceiveCallback {
+            override fun onDiscoverFinished(foundDevices: HashSet<BluetoothDevice>) {
+                mScanProgressBar.visibility = View.INVISIBLE;
+            }
+
+            override fun onDiscoveryStart() {
+                mScanProgressBar.visibility = View.VISIBLE;
+                mDeviceListAdapter.clearList();
+            }
+
+            override fun onDeviceFound(device: BluetoothDevice) {
+                mDeviceListAdapter.addUniqDevice(device);
+            }
+
+            override fun onDeviceChanged(device: BluetoothDevice) {
+                mDeviceListAdapter.addUniqDevice(device);
+            }
+        });
+
+        val bluetoothScanListView = findViewById<ListView>(R.id.bluetooth_scanned_device_listview);
+        bluetoothScanListView.adapter = mDeviceListAdapter;
     }
 
     override fun onDestroy() {
@@ -73,6 +100,7 @@ class MainActivity : Activity() {
             //検索中の場合は検出をキャンセルする
             mBluetoothAdapter!!.cancelDiscovery();
         }
+        mDeviceListAdapter.clearList();
         unregisterReceiver(mReceiver);
     }
 

@@ -29,4 +29,27 @@
         android:text="端末を見つけられるようにする"
         />
 
+    <TextView
+        android:id="@+id/device_list_title_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bluetooth_scan_button"
+        android:text="Scanned Devices"
+        android:layout_alignParentLeft="true"
+        />
+
+    <ProgressBar
+        android:id="@+id/device_list_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bluetooth_scan_button"
+        android:layout_alignParentRight="true"
+        />
+
+    <ListView
+        android:id="@+id/bluetooth_scanned_device_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/device_list_progressbar"
+        />
 </RelativeLayout>
