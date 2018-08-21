@@ -6,8 +6,16 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
 import android.content.Intent
+import android.util.Log
+import android.bluetooth.BluetoothDevice
+import android.content.IntentFilter
+import android.view.View
+import android.widget.Button
+
 
 class MainActivity : Activity() {
+    private val mReceiver: BluetoothReceiver = BluetoothReceiver();
+    private var mBluetoothAdapter: BluetoothAdapter? = null;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,17 +24,56 @@ class MainActivity : Activity() {
         // Example of a call to a native method
         sample_text.text = stringFromJNI();
 
-        val adapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         // Bluetooth非搭載の場合はアプリを終了させる
-        if (adapter == null) {
+        if (mBluetoothAdapter == null) {
             finish();
         }
         // Bluetoothが有効になっていなかったらBluetoothを有効にするかどうか聞くようにする
-        if (!adapter.isEnabled()) {
+        if (!(mBluetoothAdapter!!.isEnabled())) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
         }
 
+        val filter = IntentFilter();
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
+        filter.addAction(BluetoothDevice.ACTION_FOUND)
+        filter.addAction(BluetoothDevice.ACTION_NAME_CHANGED)
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
+        registerReceiver(mReceiver, filter)
+
+        val button = findViewById<Button>(R.id.bluetooth_scan_button);
+        button.setOnClickListener({
+            Log.d("datasender", "click");
+            if (mBluetoothAdapter!!.isDiscovering()) {
+                //検索中の場合は検出をキャンセルする
+                mBluetoothAdapter!!.cancelDiscovery();
+            }
+            //デバイスを検索する
+            //一定時間の間検出を行う
+            mBluetoothAdapter!!.startDiscovery();
+        });
+
+        val scanableButton = findViewById<Button>(R.id.bluetooth_scanable_button);
+        scanableButton.setOnClickListener({
+            val discoverableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE)
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300)
+            startActivity(discoverableIntent)
+        })
+        if (mBluetoothAdapter!!.getScanMode() !== BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+            scanableButton.visibility = View.VISIBLE
+        } else {
+            scanableButton.visibility = View.INVISIBLE
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy();
+        if (mBluetoothAdapter != null && mBluetoothAdapter!!.isDiscovering()) {
+            //検索中の場合は検出をキャンセルする
+            mBluetoothAdapter!!.cancelDiscovery();
+        }
+        unregisterReceiver(mReceiver);
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
