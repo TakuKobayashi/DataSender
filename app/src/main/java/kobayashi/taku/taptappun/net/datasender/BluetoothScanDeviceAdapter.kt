@@ -24,8 +24,8 @@ public class BluetoothScanDeviceAdapter(activity: Activity) : BaseAdapter(){
         }
     }
 
-    fun getDevice(position: Int){
-        mDevices[position];
+    fun getDevice(position: Int): BluetoothDevice {
+        return mDevices[position];
     }
 
     fun clearList(){

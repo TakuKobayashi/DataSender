@@ -16,25 +16,21 @@ class BluetoothReceiver : BroadcastReceiver(){
         Log.d(Config.TAG, action);
         if(BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)){
             if(mReceiveCallback != null) mReceiveCallback!!.onDiscoveryStart();
-            Log.d(Config.TAG, "start");
         }
         if(BluetoothDevice.ACTION_FOUND.equals(action)){
             //デバイスが検出された
             val foundDevice = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE);
             mDeviceList.add(foundDevice);
             if(mReceiveCallback != null) mReceiveCallback!!.onDeviceFound(foundDevice);
-            Log.d(Config.TAG, "found device:" + foundDevice.getName() + " address:" + foundDevice.getAddress());
         }
         if(BluetoothDevice.ACTION_NAME_CHANGED.equals(action)){
             //名前が検出された
             val foundDevice = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE);
             mDeviceList.add(foundDevice);
             if(mReceiveCallback != null) mReceiveCallback!!.onDeviceChanged(foundDevice);
-            Log.d(Config.TAG, "changed device:" + foundDevice.getName() + " address:" + foundDevice.getAddress());
         }
         if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
             if(mReceiveCallback != null) mReceiveCallback!!.onDiscoverFinished(mDeviceList);
-            Log.d(Config.TAG, "finish");
         }
     }
 

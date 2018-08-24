@@ -9,6 +9,7 @@ import android.util.Log
 import android.bluetooth.BluetoothDevice
 import android.content.IntentFilter
 import android.view.View
+import android.widget.AdapterView
 import android.widget.Button
 import android.widget.ListView
 import android.widget.ProgressBar
@@ -18,6 +19,7 @@ class MainActivity : Activity() {
     private var mBluetoothAdapter: BluetoothAdapter? = null;
     private lateinit var mScanProgressBar: ProgressBar;
     private lateinit var mDeviceListAdapter: BluetoothScanDeviceAdapter;
+    private var mBluetoothClientThreadDeviceMap: HashMap<BluetoothDevice, BluetoothClientThread> = HashMap<BluetoothDevice, BluetoothClientThread>();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +52,6 @@ class MainActivity : Activity() {
 
         val scanButton = findViewById<Button>(R.id.bluetooth_scan_button);
         scanButton.setOnClickListener({
-            Log.d("datasender", "click");
             if (mBluetoothAdapter!!.isDiscovering()) {
                 //検索中の場合は検出をキャンセルする
                 mBluetoothAdapter!!.cancelDiscovery();
@@ -92,6 +93,26 @@ class MainActivity : Activity() {
 
         val bluetoothScanListView = findViewById<ListView>(R.id.bluetooth_scanned_device_listview);
         bluetoothScanListView.adapter = mDeviceListAdapter;
+        bluetoothScanListView.setOnItemClickListener({adapterView: AdapterView<*>, view1: View, position: Int, l: Long ->
+            val device = mDeviceListAdapter.getDevice(position);
+            val clientThread = BluetoothClientThread(device);
+            clientThread.addOnClientCallback(object : BluetoothClientThread.ConnectionCallback{
+                override fun onConnectionSuccess(device: BluetoothDevice) {
+                    Log.d(Config.TAG, "connectionSuccess");
+                }
+
+                override fun onTryConnection(device: BluetoothDevice) {
+                    Log.d(Config.TAG, "tryConnection");
+                }
+
+                override fun onClose(device: BluetoothDevice) {
+                    mBluetoothClientThreadDeviceMap.remove(device);
+                    Log.d(Config.TAG, "close");
+                }
+            });
+            clientThread.startConnection();
+            mBluetoothClientThreadDeviceMap.put(device, clientThread);
+        })
     }
 
     override fun onDestroy() {
@@ -100,6 +121,10 @@ class MainActivity : Activity() {
             //検索中の場合は検出をキャンセルする
             mBluetoothAdapter!!.cancelDiscovery();
         }
+        mBluetoothClientThreadDeviceMap.forEach{(device, clientThread) ->
+            clientThread.close();
+        };
+        mBluetoothClientThreadDeviceMap.clear();
         mDeviceListAdapter.clearList();
         unregisterReceiver(mReceiver);
     }
@@ -114,10 +139,6 @@ class MainActivity : Activity() {
         }
     }
 
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
     external fun stringFromJNI(): String
 
     companion object {
