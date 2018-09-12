@@ -43,11 +43,14 @@ public class BluetoothConnectionThread(connectionSocket: BluetoothSocket){
             // Read from the InputStream
             bytes = mSocketInput!!.read(buffer)
         } catch (e: IOException) {
-            Log.d(Config.TAG, "disconnected:" + e.message)
+            e.printStackTrace();
+            Log.d(Config.TAG, "disconnected:" + e.message);
+            close();
         }
         if(bytes > 0) {
+            val receivedData = buffer.slice(IntRange(0, bytes - 1));
             for(callback in mSendReceivedList){
-                callback.onReceive(bytes, buffer);
+                callback.onReceive(bytes, receivedData.toByteArray());
             }
         }
 
@@ -64,9 +67,6 @@ public class BluetoothConnectionThread(connectionSocket: BluetoothSocket){
         } catch (e: IOException) {
             Log.d(Config.TAG, "Exception during write" + e.message)
         }
-        for(callback in mSendReceivedList){
-            callback.onClose();
-        }
     }
 
     public fun close(){
@@ -78,6 +78,9 @@ public class BluetoothConnectionThread(connectionSocket: BluetoothSocket){
                 e.printStackTrace()
                 Log.d(Config.TAG, "Exception socket close" + e.message)
             }
+        }
+        for(callback in mSendReceivedList){
+            callback.onClose(mConnectionSocket);
         }
     }
 
@@ -92,6 +95,6 @@ public class BluetoothConnectionThread(connectionSocket: BluetoothSocket){
     interface SendReceivedCallback {
         fun onReceive(bytes: Int, data: ByteArray)
         fun onSend(data: ByteArray)
-        fun onClose();
+        fun onClose(connectionSocket: BluetoothSocket);
     }
 }

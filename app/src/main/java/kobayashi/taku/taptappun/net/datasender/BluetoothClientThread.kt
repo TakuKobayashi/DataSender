@@ -52,9 +52,9 @@ public class BluetoothClientThread(device: BluetoothDevice){
             } catch (e2: IOException) {
                 Log.e(Config.TAG, "unable to close() socket during connection failure", e2)
             }
-        }
-        mConnectionCallbackList.forEach {callback ->
-            callback.onClose(mBluetoothDevice);
+            mConnectionCallbackList.forEach {callback ->
+                callback.onClose(mBluetoothDevice, mSocket!!);
+            }
         }
     }
 
@@ -72,6 +72,6 @@ public class BluetoothClientThread(device: BluetoothDevice){
 
     interface ConnectionCallback {
         fun onConnectionSuccess(device: BluetoothDevice, connectionSocket: BluetoothSocket, connectionThread: BluetoothConnectionThread);
-        fun onClose(device: BluetoothDevice);
+        fun onClose(device: BluetoothDevice, connectionSocket: BluetoothSocket);
     }
 }

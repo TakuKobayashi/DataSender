@@ -19,8 +19,10 @@ class MainActivity : Activity() {
     private lateinit var mScanProgressBar: ProgressBar;
     private lateinit var mDeviceListAdapter: BluetoothScanDeviceAdapter;
     private lateinit var mBluetoothServerThread: BluetoothServerThread;
+    private lateinit var mReceiveTextView: TextView;
     private var mBluetoothClientThreadDeviceMap: HashMap<BluetoothDevice, BluetoothClientThread> = HashMap<BluetoothDevice, BluetoothClientThread>();
     private var mBluetoothSocketConnectionThread: HashMap<BluetoothSocket, BluetoothConnectionThread> = HashMap<BluetoothSocket, BluetoothConnectionThread>();
+    private var mReceiveMessages = ArrayList<String>();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,8 +53,10 @@ class MainActivity : Activity() {
 
         mDeviceListAdapter = BluetoothScanDeviceAdapter(this);
 
-        mScanProgressBar = findViewById(R.id.device_list_progressbar);
+        mScanProgressBar = findViewById<ProgressBar>(R.id.device_list_progressbar);
         mScanProgressBar.visibility = View.INVISIBLE;
+
+        mReceiveTextView = findViewById<TextView>(R.id.receive_message_textview);
 
         val scanButton = findViewById<Button>(R.id.bluetooth_scan_button);
         scanButton.setOnClickListener({
@@ -100,8 +104,9 @@ class MainActivity : Activity() {
                     setupConnectionThread(connectionSocket, connectionThread);
                 }
 
-                override fun onClose(device: BluetoothDevice) {
+                override fun onClose(device: BluetoothDevice, connectionSocket: BluetoothSocket) {
                     mBluetoothClientThreadDeviceMap.remove(device);
+                    mBluetoothSocketConnectionThread.remove(connectionSocket);
                     Log.d(Config.TAG, "close");
                 }
             });
@@ -127,6 +132,10 @@ class MainActivity : Activity() {
     private fun setupConnectionThread(connectionSocket: BluetoothSocket, connectionThread: BluetoothConnectionThread){
         connectionThread.addOnSendReceivedCallback(object : BluetoothConnectionThread.SendReceivedCallback{
             override fun onReceive(bytes: Int, data: ByteArray) {
+                mReceiveMessages.add(data.toString(Charsets.UTF_8));
+                runOnUiThread({
+                    mReceiveTextView.setText(mReceiveMessages.joinToString("\n"));
+                });
                 Log.d(Config.TAG, "socketReceive:" + data.toString(Charsets.UTF_8));
             }
 
@@ -134,7 +143,8 @@ class MainActivity : Activity() {
                 Log.d(Config.TAG, "socketSend:" + data.toString(Charsets.UTF_8));
             }
 
-            override fun onClose() {
+            override fun onClose(connectionSocket: BluetoothSocket) {
+                mBluetoothSocketConnectionThread.remove(connectionSocket);
                 Log.d(Config.TAG, "SocketClose");
             }
         });
