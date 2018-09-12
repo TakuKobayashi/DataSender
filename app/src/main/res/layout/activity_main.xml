@@ -44,5 +44,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/device_list_title_textview"
+        android:layout_above="@+id/receive_message_textview"
+        />
+
+    <TextView
+        android:id="@+id/receive_message_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/send_message_edittext"
+        android:layout_alignParentLeft="true"
+        />
+
+    <EditText
+        android:id="@+id/send_message_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/send_message_button"
+        />
+
+    <Button
+        android:id="@+id/send_message_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
         />
 </RelativeLayout>

@@ -16,29 +16,32 @@ public class BluetoothClientThread(device: BluetoothDevice){
 
     init{
         mConnectionThread = Thread(Runnable {
-            connectionRoutine();
+            var clientSocket = connection();
+            if(clientSocket != null){
+                var connectionThread = BluetoothConnectionThread(clientSocket);
+                connectionThread.startThread();
+                mConnectionCallbackList.forEach {callback ->
+                    callback.onConnectionSuccess(mBluetoothDevice, clientSocket, connectionThread);
+                }
+            }
         });
     }
 
-    private fun connectionRoutine(){
+    private fun connection(): BluetoothSocket?{
         try {
             mSocket = mBluetoothDevice.createRfcommSocketToServiceRecord(Config.BLUETOOTH_SPPUUID);
-            mConnectionCallbackList.forEach {callback ->
-                callback.onTryConnection(mBluetoothDevice);
-            }
             if(mSocket == null){
                 Log.e(Config.TAG, "connection null");
-                return;
+                return null;
             }
             mSocket!!.connect();
             Log.d(Config.TAG, "connect!!");
-            mConnectionCallbackList.forEach {callback ->
-                callback.onConnectionSuccess(mBluetoothDevice);
-            }
+            return mSocket;
         } catch (e: IOException) {
             close();
             Log.e(Config.TAG, "failed", e);
-            return;
+            mSocket = null;
+            return null;
         }
     }
 
@@ -68,8 +71,7 @@ public class BluetoothClientThread(device: BluetoothDevice){
     }
 
     interface ConnectionCallback {
-        fun onTryConnection(device: BluetoothDevice);
-        fun onConnectionSuccess(device: BluetoothDevice);
+        fun onConnectionSuccess(device: BluetoothDevice, connectionSocket: BluetoothSocket, connectionThread: BluetoothConnectionThread);
         fun onClose(device: BluetoothDevice);
     }
 }
