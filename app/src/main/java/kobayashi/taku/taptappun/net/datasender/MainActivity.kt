@@ -36,13 +36,6 @@ class MainActivity : Activity() {
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
         }
 
-        val filter = IntentFilter();
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
-        filter.addAction(BluetoothDevice.ACTION_FOUND)
-        filter.addAction(BluetoothDevice.ACTION_NAME_CHANGED)
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
-        registerReceiver(mReceiver, filter)
-
         mDeviceListAdapter = BluetoothScanDeviceAdapter(this);
 
         mScanProgressBar = findViewById(R.id.device_list_progressbar);
@@ -50,20 +43,14 @@ class MainActivity : Activity() {
 
         val scanButton = findViewById<Button>(R.id.bluetooth_scan_button);
         scanButton.setOnClickListener({
-            if (mBluetoothAdapter!!.isDiscovering()) {
-                //検索中の場合は検出をキャンセルする
-                mBluetoothAdapter!!.cancelDiscovery();
-            }
-            //デバイスを検索する
-            //一定時間の間検出を行う
-            mBluetoothAdapter!!.startDiscovery();
+            discoverBluetoothDevice();
         });
 
         val scanableButton = findViewById<Button>(R.id.bluetooth_scanable_button);
         scanableButton.setOnClickListener({
-            val discoverableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE)
-            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300)
-            startActivity(discoverableIntent)
+            val discoverableIntent = Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            startActivity(discoverableIntent);
         })
         if (mBluetoothAdapter!!.getScanMode() !== BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
             scanableButton.visibility = View.VISIBLE
@@ -110,7 +97,25 @@ class MainActivity : Activity() {
             });
             clientThread.startConnection();
             mBluetoothClientThreadDeviceMap.put(device, clientThread);
-        })
+        });
+        discoverBluetoothDevice();
+    }
+
+    private fun discoverBluetoothDevice(){
+        val filter = IntentFilter();
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
+        filter.addAction(BluetoothDevice.ACTION_FOUND)
+        filter.addAction(BluetoothDevice.ACTION_NAME_CHANGED)
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
+        registerReceiver(mReceiver, filter)
+
+        if (mBluetoothAdapter!!.isDiscovering()) {
+            //検索中の場合は検出をキャンセルする
+            mBluetoothAdapter!!.cancelDiscovery();
+        }
+        //デバイスを検索する
+        //一定時間の間検出を行う
+        mBluetoothAdapter!!.startDiscovery();
     }
 
     override fun onDestroy() {
