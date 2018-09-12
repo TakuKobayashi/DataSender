@@ -7,19 +7,23 @@ import kotlinx.android.synthetic.main.activity_main.*
 import android.content.Intent
 import android.util.Log
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothSocket
 import android.content.IntentFilter
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Button
 import android.widget.ListView
 import android.widget.ProgressBar
+import java.nio.charset.Charset
 
 class MainActivity : Activity() {
     private val mReceiver: BluetoothReceiver = BluetoothReceiver();
     private var mBluetoothAdapter: BluetoothAdapter? = null;
     private lateinit var mScanProgressBar: ProgressBar;
     private lateinit var mDeviceListAdapter: BluetoothScanDeviceAdapter;
+    private lateinit var mBluetoothServerThread: BluetoothServerThread;
     private var mBluetoothClientThreadDeviceMap: HashMap<BluetoothDevice, BluetoothClientThread> = HashMap<BluetoothDevice, BluetoothClientThread>();
+    private var mBluetoothSocketConnectionThread: HashMap<BluetoothSocket, BluetoothConnectionThread> = HashMap<BluetoothSocket, BluetoothConnectionThread>();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +39,31 @@ class MainActivity : Activity() {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
         }
+        mBluetoothServerThread = BluetoothServerThread(mBluetoothAdapter!!);
+        mBluetoothServerThread.addOnConnectionCallback(object : BluetoothServerThread.ConnectionCallback{
+            override fun onConnectionSuccess(connectionSocket: BluetoothSocket, connectionThread: BluetoothConnectionThread) {
+                Log.d(Config.TAG, "ConnectionSuccess");
+                connectionThread.addOnSendReceivedCallback(object : BluetoothConnectionThread.SendReceivedCallback{
+                    override fun onReceive(bytes: Int, data: ByteArray) {
+                        Log.d(Config.TAG, "socketReceive:" + data.toString(Charset.forName("UTF-8")));
+                    }
+
+                    override fun onSend(data: ByteArray) {
+                        Log.d(Config.TAG, "socketSend:" + data.toString(Charset.forName("UTF-8")));
+                    }
+
+                    override fun onClose() {
+                        Log.d(Config.TAG, "SocketClose");
+                    }
+                });
+                mBluetoothSocketConnectionThread.put(connectionSocket, connectionThread);
+            }
+
+            override fun onClose() {
+                Log.d(Config.TAG, "Close");
+            }
+        })
+        mBluetoothServerThread.startWaitConnectionServer();
 
         mDeviceListAdapter = BluetoothScanDeviceAdapter(this);
 
@@ -129,6 +158,7 @@ class MainActivity : Activity() {
         };
         mBluetoothClientThreadDeviceMap.clear();
         mDeviceListAdapter.clearList();
+        mBluetoothServerThread.closeServerSocket();
         unregisterReceiver(mReceiver);
     }
 

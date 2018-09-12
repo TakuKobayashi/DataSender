@@ -7,13 +7,11 @@ import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
-
 // https://woshidan.hatenablog.com/entry/2015/10/30/083000
 public class BluetoothClientThread(device: BluetoothDevice){
     private val mBluetoothDevice = device;
     private var mSocket: BluetoothSocket? = null
     private var mConnectionThread: Thread;
-    private val sppuuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     private val mConnectionCallbackList: ArrayList<ConnectionCallback> = ArrayList<ConnectionCallback>();
 
     init{
@@ -24,7 +22,7 @@ public class BluetoothClientThread(device: BluetoothDevice){
 
     private fun connectionRoutine(){
         try {
-            mSocket = mBluetoothDevice.createRfcommSocketToServiceRecord(sppuuid);
+            mSocket = mBluetoothDevice.createRfcommSocketToServiceRecord(Config.BLUETOOTH_SPPUUID);
             mConnectionCallbackList.forEach {callback ->
                 callback.onTryConnection(mBluetoothDevice);
             }
@@ -33,6 +31,7 @@ public class BluetoothClientThread(device: BluetoothDevice){
                 return;
             }
             mSocket!!.connect();
+            Log.d(Config.TAG, "connect!!");
             mConnectionCallbackList.forEach {callback ->
                 callback.onConnectionSuccess(mBluetoothDevice);
             }
