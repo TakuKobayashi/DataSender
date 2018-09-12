@@ -25,8 +25,6 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        sample_text.text = stringFromJNI();
-
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         // Bluetooth非搭載の場合はアプリを終了させる
         if (mBluetoothAdapter == null) {
