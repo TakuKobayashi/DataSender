@@ -175,17 +175,6 @@ class BluetoothConnectionActivity : Activity() {
             //検索中の場合は検出をキャンセルする
             mBluetoothAdapter!!.cancelDiscovery();
         }
-        BluetoothConnectionThreadManager.
-                getSocketThreadPairs().
-                forEach{(device, connectionThread) ->
-                    if(connectionThread != null){
-                        connectionThread.close();
-                    }
-        };
-        mBluetoothClientThreadDeviceMap.forEach{(device, clientThread) ->
-            clientThread.close();
-        };
-        BluetoothConnectionThreadManager.clear();
         mBluetoothClientThreadDeviceMap.clear();
         mDeviceListAdapter.clearList();
         mBluetoothServerThread.closeServerSocket();

@@ -4,6 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <kobayashi.taku.taptappun.net.datasender.DrawView
+        android:id="@+id/main_draw_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        />
+
     <RelativeLayout
         android:id="@+id/main_header_layout"
         android:layout_width="match_parent"
@@ -29,14 +36,6 @@
             android:text="@string/connection_button_label"
             />
     </RelativeLayout>
-
-    <kobayashi.taku.taptappun.net.datasender.DrawView
-        android:id="@+id/main_draw_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/main_header_layout"
-        android:layout_above="@+id/main_footer_layout"
-        />
 
     <RelativeLayout
         android:id="@+id/main_footer_layout"
