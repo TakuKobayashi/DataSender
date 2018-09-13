@@ -3,7 +3,6 @@ package kobayashi.taku.taptappun.net.datasender
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_main.*
 import android.content.Intent
 import android.util.Log
 import android.bluetooth.BluetoothDevice
@@ -11,7 +10,6 @@ import android.bluetooth.BluetoothSocket
 import android.content.IntentFilter
 import android.view.View
 import android.widget.*
-import java.nio.charset.Charset
 
 class MainActivity : Activity() {
     private val mReceiver: BluetoothReceiver = BluetoothReceiver();
@@ -93,25 +91,22 @@ class MainActivity : Activity() {
             }
         });
 
+        val bluetoothBoundedListView = findViewById<ListView>(R.id.bounded_device_listview);
+        val connectedListAdapter = BluetoothScanDeviceAdapter(this);
+        bluetoothBoundedListView.adapter = connectedListAdapter;
+        for(device in mBluetoothAdapter!!.bondedDevices){
+            connectedListAdapter.addUniqDevice(device);
+        }
+        bluetoothBoundedListView.setOnItemClickListener({adapterView: AdapterView<*>, view1: View, position: Int, l: Long ->
+            val device = mDeviceListAdapter.getDevice(position);
+            connectAndSetDevice(device);
+        });
+
         val bluetoothScanListView = findViewById<ListView>(R.id.bluetooth_scanned_device_listview);
         bluetoothScanListView.adapter = mDeviceListAdapter;
         bluetoothScanListView.setOnItemClickListener({adapterView: AdapterView<*>, view1: View, position: Int, l: Long ->
             val device = mDeviceListAdapter.getDevice(position);
-            val clientThread = BluetoothClientThread(device);
-            clientThread.addOnClientCallback(object : BluetoothClientThread.ConnectionCallback{
-                override fun onConnectionSuccess(device: BluetoothDevice, connectionSocket: BluetoothSocket, connectionThread: BluetoothConnectionThread) {
-                    Log.d(Config.TAG, "ConnectionClientSuccess:" + connectionSocket);
-                    setupConnectionThread(connectionSocket, connectionThread);
-                }
-
-                override fun onClose(device: BluetoothDevice, connectionSocket: BluetoothSocket) {
-                    mBluetoothClientThreadDeviceMap.remove(device);
-                    mBluetoothSocketConnectionThread.remove(connectionSocket);
-                    Log.d(Config.TAG, "close");
-                }
-            });
-            clientThread.startConnection();
-            mBluetoothClientThreadDeviceMap.put(device, clientThread);
+            connectAndSetDevice(device);
         });
 
         val sendButton = findViewById<Button>(R.id.send_message_button);
@@ -127,6 +122,24 @@ class MainActivity : Activity() {
         });
 
         discoverBluetoothDevice();
+    }
+
+    private fun connectAndSetDevice(device: BluetoothDevice){
+        val clientThread = BluetoothClientThread(device);
+        clientThread.addOnClientCallback(object : BluetoothClientThread.ConnectionCallback{
+            override fun onConnectionSuccess(device: BluetoothDevice, connectionSocket: BluetoothSocket, connectionThread: BluetoothConnectionThread) {
+                Log.d(Config.TAG, "ConnectionClientSuccess:" + connectionSocket);
+                setupConnectionThread(connectionSocket, connectionThread);
+            }
+
+            override fun onClose(device: BluetoothDevice, connectionSocket: BluetoothSocket) {
+                mBluetoothClientThreadDeviceMap.remove(device);
+                mBluetoothSocketConnectionThread.remove(connectionSocket);
+                Log.d(Config.TAG, "close");
+            }
+        });
+        clientThread.startConnection();
+        mBluetoothClientThreadDeviceMap.put(device, clientThread);
     }
 
     private fun setupConnectionThread(connectionSocket: BluetoothSocket, connectionThread: BluetoothConnectionThread){

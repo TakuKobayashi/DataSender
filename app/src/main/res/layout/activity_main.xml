@@ -31,10 +31,26 @@
         />
 
     <TextView
-        android:id="@+id/device_list_title_textview"
+        android:id="@+id/bounded_device_title_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/device_list_progressbar"
+        android:text="Connected Devices"
+        android:layout_alignParentLeft="true"
+        />
+
+    <ListView
+        android:id="@+id/bounded_device_listview"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_below="@+id/bounded_device_title_textview"
+        />
+
+    <TextView
+        android:id="@+id/device_list_title_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bounded_device_listview"
         android:text="Scanned Devices"
         android:layout_alignParentLeft="true"
         />
