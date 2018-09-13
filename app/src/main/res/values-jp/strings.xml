@@ -7,7 +7,7 @@
     <string name="send_button_label">送信</string>
     <string name="connection_device_title">接続中の端末:</string>
     <string name="connection_button_label">接続</string>
-    <string name="gallary_button_label">画像を選択</string>
-    <string name="gallary_clear_button_label">背景を消す</string>
-    <string name="draw_clear_button_label">絵を消す</string>
+    <string name="gallary_button_label">ギャラリーの画像を選択</string>
+    <string name="gallary_clear_button_label">背景画像を消す</string>
+    <string name="draw_clear_button_label">描いた絵を消す</string>
 </resources>

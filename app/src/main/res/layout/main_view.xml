@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/main_header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
+
+        <TextView
+            android:id="@+id/connection_device_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/connection_device_title"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/connect_device_button"
+            />
+
+        <Button
+            android:id="@+id/connect_device_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:text="@string/connection_button_label"
+            />
+    </RelativeLayout>
+
+    <kobayashi.taku.taptappun.net.datasender.DrawView
+        android:id="@+id/main_draw_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/main_header_layout"
+        android:layout_above="@+id/main_footer_layout"
+        />
+
+    <RelativeLayout
+        android:id="@+id/main_footer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/gallary_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:text="@string/gallary_button_label"
+            />
+
+        <Button
+            android:id="@+id/gallary_clear_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/gallary_button"
+            android:text="@string/gallary_clear_button_label"
+            />
+
+        <Button
+            android:id="@+id/draw_clear_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/gallary_clear_button"
+            android:text="@string/draw_clear_button_label"
+            />
+
+        <Button
+            android:id="@+id/send_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/draw_clear_button"
+            android:text="@string/send_button_label"
+            />
+
+
+        <RelativeLayout
+            android:id="@+id/debug_message_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/gallary_button">
+
+            <EditText
+                android:id="@+id/send_message_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/send_message_button"
+                />
+
+            <Button
+                android:id="@+id/send_message_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/send_button_label"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                />
+        </RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>

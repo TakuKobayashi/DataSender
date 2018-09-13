@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:text="端末を探す"
+        android:text="@string/search_device_button_label"
         />
 
     <Button
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@id/bluetooth_scan_button"
-        android:text="端末を見つけられるようにする"
+        android:text="@string/scannable_button_label"
         />
 
     <ProgressBar
@@ -35,7 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/device_list_progressbar"
-        android:text="Connected Devices"
+        android:text="@string/bounded_device_title"
         android:layout_alignParentLeft="true"
         />
 
@@ -51,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/bounded_device_listview"
-        android:text="Scanned Devices"
+        android:text="@string/scanned_device_title"
         android:layout_alignParentLeft="true"
         />
 
@@ -68,23 +68,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/send_message_edittext"
-        android:layout_alignParentLeft="true"
-        />
-
-    <EditText
-        android:id="@+id/send_message_edittext"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/send_message_button"
-        />
-
-    <Button
-        android:id="@+id/send_message_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Send"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
         />
 </RelativeLayout>
