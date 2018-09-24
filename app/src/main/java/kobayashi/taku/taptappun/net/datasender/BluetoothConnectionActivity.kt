@@ -148,8 +148,7 @@ class BluetoothConnectionActivity : Activity() {
                 Log.d(Config.TAG, "SocketClose");
             }
         });
-        BluetoothConnectionThreadManager.
-                putSocketConnectionThread(connectionSocket, connectionThread);
+        BluetoothConnectionThreadManager.putSocketConnectionThread(connectionSocket, connectionThread);
     }
 
     private fun discoverBluetoothDevice(){

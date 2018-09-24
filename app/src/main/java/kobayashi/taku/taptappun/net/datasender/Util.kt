@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
+import android.util.Log
 import android.view.View
 import android.webkit.WebView
 import android.widget.ImageView
@@ -13,6 +14,7 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import java.nio.ByteBuffer
 
 object Util {
 
@@ -35,6 +37,24 @@ object Util {
         webview!!.setWebViewClient(null)
         webview!!.destroy()
         webview = null
+    }
+
+    fun imageConvertToBytearray(image: Bitmap): ByteArray{
+        val size = image.getRowBytes() * image.getHeight()
+        val buffer = ByteBuffer.allocate(size)
+        image.copyPixelsToBuffer(buffer);
+        return buffer.array();
+    }
+
+    fun argbTorgbBytearray(argb: ByteArray): ByteArray{
+        val rgbbytes = ArrayList<Byte>();
+        for ((index, value) in argb.withIndex()) {
+            if(index % 4 == 3){
+                continue;
+            }
+            rgbbytes.add(value);
+        }
+        return rgbbytes.toByteArray();
     }
 
     fun isAssetFileIsDirectory(context: Context, path: String): Boolean {

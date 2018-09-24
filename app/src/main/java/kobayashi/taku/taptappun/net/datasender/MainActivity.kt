@@ -1,19 +1,9 @@
 package kobayashi.taku.taptappun.net.datasender
 
 import android.app.Activity
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothSocket
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.*
-import android.opengl.ETC1.getHeight
-import java.nio.BufferUnderflowException
-import java.nio.ByteBuffer
-
 
 class MainActivity : Activity() {
     private lateinit var mDrawView: DrawView;
@@ -40,24 +30,13 @@ class MainActivity : Activity() {
         val sendButton = findViewById<Button>(R.id.send_button);
         sendButton.setOnClickListener({
             var image = mDrawView.getImage();
-            val size = image.getRowBytes() * image.getHeight()
-            val buffer = ByteBuffer.allocate(size)
-            image.copyPixelsToBuffer(buffer);
-            val bytes = buffer.array();
-            val rgbbytes = ArrayList<Byte>();
-            for ((index, value) in bytes.withIndex()) {
-                if(index % 4 == 3){
-                    continue;
-                }
-                rgbbytes.add(value);
-            }
-            Log.d(Config.TAG, rgbbytes.toByteArray().joinToString(" "));
-
+            val bytes = Util.imageConvertToBytearray(image);
+            val rgbbytes = Util.argbTorgbBytearray(bytes);
             BluetoothConnectionThreadManager.
                     getSocketThreadPairs().
                     forEach{(socket, connectionThread) ->
                         if(connectionThread != null){
-                            connectionThread.sendData(rgbbytes.toByteArray());
+                            connectionThread.sendData(rgbbytes);
                         }
                     };
         });
