@@ -12,10 +12,10 @@ import android.view.View
 import android.widget.*
 
 class BluetoothConnectionActivity : Activity() {
-    private val mReceiver: BluetoothReceiver = BluetoothReceiver();
+    private val mReceiver: BluetoothScanDeviceReceiver = BluetoothScanDeviceReceiver();
     private var mBluetoothAdapter: BluetoothAdapter? = null;
     private lateinit var mScanProgressBar: ProgressBar;
-    private lateinit var mDeviceListAdapter: BluetoothScanDeviceAdapter;
+    private lateinit var mDeviceListAdapter: BluetoothDeviceAdapter;
     private lateinit var mBluetoothServerThread: BluetoothServerThread;
     private lateinit var mReceiveTextView: TextView;
     private var mBluetoothClientThreadDeviceMap: HashMap<BluetoothDevice, BluetoothClientThread> = HashMap<BluetoothDevice, BluetoothClientThread>();
@@ -48,7 +48,7 @@ class BluetoothConnectionActivity : Activity() {
         })
         mBluetoothServerThread.startWaitConnectionServer();
 
-        mDeviceListAdapter = BluetoothScanDeviceAdapter(this);
+        mDeviceListAdapter = BluetoothDeviceAdapter(this);
 
         mScanProgressBar = findViewById<ProgressBar>(R.id.device_list_progressbar);
         mScanProgressBar.visibility = View.INVISIBLE;
@@ -71,7 +71,7 @@ class BluetoothConnectionActivity : Activity() {
         } else {
             scanableButton.visibility = View.INVISIBLE
         }
-        mReceiver.setOnReceiveCallback(object : BluetoothReceiver.ReceiveCallback {
+        mReceiver.setOnReceiveCallback(object : BluetoothScanDeviceReceiver.ReceiveCallback {
             override fun onDiscoverFinished(foundDevices: HashSet<BluetoothDevice>) {
                 mScanProgressBar.visibility = View.INVISIBLE;
             }
@@ -91,7 +91,7 @@ class BluetoothConnectionActivity : Activity() {
         });
 
         val bluetoothBoundedListView = findViewById<ListView>(R.id.bounded_device_listview);
-        val connectedListAdapter = BluetoothScanDeviceAdapter(this);
+        val connectedListAdapter = BluetoothDeviceAdapter(this);
         bluetoothBoundedListView.adapter = connectedListAdapter;
         for(device in mBluetoothAdapter!!.bondedDevices){
             connectedListAdapter.addUniqDevice(device);

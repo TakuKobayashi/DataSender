@@ -3,24 +3,35 @@ package kobayashi.taku.taptappun.net.datasender
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.widget.*
 
-class MainActivity : Activity() {
+class MainActivity : AppCompatActivity() {
     private lateinit var mDrawView: DrawView;
+    private lateinit var mConnectedDeviceAdapter: BluetoothDeviceAdapter;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_view);
 
+        /*
         val connectionDeviceNameTextView = findViewById<TextView>(R.id.connection_device_name);
         val connectDeviceButton = findViewById<Button>(R.id.connect_device_button);
         connectDeviceButton.setOnClickListener({
            val intent = Intent(this, BluetoothConnectionActivity::class.java);
            startActivity(intent);
         });
+        */
+        val headerToolbar = findViewById<Toolbar>(R.id.header_toolbar);
+
+        val adapter = BluetoothDeviceAdapter(this);
+        val spinner = headerToolbar.findViewById<Spinner>(R.id.header_connected_device_spinner);
+
+        setSupportActionBar(headerToolbar)
 
         mDrawView = findViewById<DrawView>(R.id.main_draw_view);
-        mDrawView.setImage(Util.loadImageFromAsset(this, "twitter_sample.jpg"));
+        //mDrawView.setImage(Util.loadImageFromAsset(this, "twitter_sample.jpg"));
 
         val gallaryButton = findViewById<Button>(R.id.gallary_button);
         val gallaryClearButton = findViewById<Button>(R.id.gallary_clear_button);
@@ -54,6 +65,16 @@ class MainActivity : Activity() {
             editText.setText("");
         });
 
+    }
+
+    private fun UpdateConnectedDeviceAdapter(){
+        BluetoothConnectionThreadManager.getSocketThreadPairs().
+                forEach{(device, connectionThread) ->
+                    if(connectionThread != null){
+                        connectionThread.close();
+                    }
+                };
+        mConnectedDeviceAdapter
     }
 
     override fun onDestroy() {

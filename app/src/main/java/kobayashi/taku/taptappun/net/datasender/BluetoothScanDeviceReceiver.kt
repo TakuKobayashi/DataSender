@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 
-class BluetoothReceiver : BroadcastReceiver(){
+class BluetoothScanDeviceReceiver : BroadcastReceiver(){
     private var mReceiveCallback: ReceiveCallback? = null;
     private var mDeviceList: HashSet<BluetoothDevice> = HashSet<BluetoothDevice>();
 

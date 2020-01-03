@@ -8,7 +8,7 @@ import android.app.Activity
 import android.bluetooth.BluetoothDevice
 
 // https://woshidan.hatenablog.com/entry/2015/10/30/083000
-public class BluetoothScanDeviceAdapter(activity: Activity) : BaseAdapter(){
+public class BluetoothDeviceAdapter(activity: Activity) : BaseAdapter(){
     private val mActivity: Activity = activity;
     private var mDevices = ArrayList<BluetoothDevice>()
 

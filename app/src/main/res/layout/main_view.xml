@@ -4,38 +4,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/header_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+
+        <Spinner
+            android:id="@+id/header_connected_device_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+        />
+    </androidx.appcompat.widget.Toolbar>
+
+    <include layout="@layout/drawer_menu_layout" android:id="@+id/drawer_menu_layout"/>
+
     <kobayashi.taku.taptappun.net.datasender.DrawView
         android:id="@+id/main_draw_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         />
-
-    <RelativeLayout
-        android:id="@+id/main_header_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true">
-
-        <TextView
-            android:id="@+id/connection_device_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="@string/connection_device_title"
-            android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/connect_device_button"
-            />
-
-        <Button
-            android:id="@+id/connect_device_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:text="@string/connection_button_label"
-            />
-    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/main_footer_layout"
