@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.*
+import net.taptappun.taku.kobayashi.runtimepermissionchecker.RuntimePermissionChecker
 
 class MainActivity : Activity() {
     private lateinit var mDrawView: DrawView;
@@ -53,7 +54,7 @@ class MainActivity : Activity() {
             };
             editText.setText("");
         });
-
+        RuntimePermissionChecker.requestAllPermissions(this, 1)
     }
 
     override fun onDestroy() {
