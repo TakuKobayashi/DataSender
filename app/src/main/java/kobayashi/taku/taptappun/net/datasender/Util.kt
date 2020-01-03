@@ -61,7 +61,8 @@ object Util {
         val mngr = context.getAssets()
         var isDirectory = false
         try {
-            if (mngr.list(path).size > 0) { //子が含まれる場合はディレクトリ
+            val fileList = mngr.list(path)
+            if (fileList != null && fileList.size > 0) { //子が含まれる場合はディレクトリ
                 isDirectory = true
             } else {
                 // オープン可能かチェック
@@ -90,7 +91,7 @@ object Util {
         return null
     }
 
-    fun loadFilePathes(context: Context, path: String): Array<String> {
+    fun loadFilePathes(context: Context, path: String): Array<String>? {
         val mngr = context.getAssets()
         try {
             return mngr.list(path)
